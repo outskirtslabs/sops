@@ -6,64 +6,42 @@
     devshell.inputs.nixpkgs.follows = "nixpkgs";
     devenv.url = "github:ramblurr/nix-devenv";
     devenv.inputs.nixpkgs.follows = "nixpkgs";
-    clj-nix.url = "github:jlesquembre/clj-nix";
-    clj-nix.inputs.nixpkgs.follows = "nixpkgs";
+    clj-helpers.url = "github:outskirtslabs/clojure-nix-locker-helpers";
+    clj-helpers.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs =
     inputs@{
       self,
-      clj-nix,
       devenv,
       devshell,
+      clj-helpers,
       ...
     }:
+    let
+      package =
+        pkgs:
+        clj-helpers.lib.mkCljLib {
+          inherit pkgs;
+          name = "sops";
+          version = "0.1.0";
+          src = ./.;
+          prefetchAliases = [ "kaocha" ];
+          checkCommand = "clojure -Srepro -M:kaocha";
+          gitRev = clj-helpers.lib.gitRev self;
+          nativeBuildInputs = [
+            pkgs.sops
+          ];
+        };
+    in
     devenv.lib.mkFlake ./. {
       inherit inputs;
       withOverlays = [
         devshell.overlays.default
         devenv.overlays.default
-        clj-nix.overlays.default
       ];
       packages = {
-        default =
-          pkgs:
-          let
-            root = toString ./.;
-            gitRev =
-              if self ? rev then
-                self.rev
-              else if self ? dirtyRev then
-                self.dirtyRev
-              else
-                "dirty";
-            projectSrc = pkgs.lib.cleanSourceWith {
-              src = ./.;
-              filter =
-                path: _type:
-                let
-                  rel = pkgs.lib.removePrefix (root + "/") (toString path);
-                  base = builtins.baseNameOf path;
-                in
-                !(base == ".git" || rel == "result" || pkgs.lib.hasPrefix "target/" rel);
-            };
-          in
-          pkgs.mkCljLib {
-            inherit projectSrc;
-            name = "com.outskirtslabs/sops";
-            version = "0.1.0";
-            nativeBuildInputs = [
-              pkgs.coreutils
-              pkgs.sops
-            ];
-            GIT_REV = gitRev;
-            JAVA_HOME = pkgs.jdk25.home;
-            buildCommand = ''
-              export JAVA_HOME="${pkgs.jdk25.home}"
-              export JAVA_CMD="${pkgs.jdk25}/bin/java"
-              clojure -M:kaocha
-              clojure -T:build jar
-            '';
-          };
+        default = package;
+        locker = pkgs: (package pkgs).locker;
       };
       devShell =
         pkgs:
@@ -77,6 +55,7 @@
             devenv.capsules.clojure
           ];
           packages = [
+            self.packages.${pkgs.system}.locker
             pkgs.dumbpipe
             pkgs.git
             pkgs.sops
