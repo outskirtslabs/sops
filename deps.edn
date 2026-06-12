@@ -4,8 +4,8 @@
                     :extra-deps  {lambdaisland/kaocha {:mvn/version "1.91.1392"}}
                     :main-opts   ["-m" "kaocha.runner"]}
            :dev    {:extra-paths ["dev"]}
-           :build  {:deps       {io.github.clojure/tools.build {:mvn/version "0.10.12"}
-                                 slipset/deps-deploy           {:mvn/version "0.2.2"}}
+           :build  {:deps       {io.github.clojure/tools.build {:mvn/version "0.10.14"}
+                                 slipset/deps-deploy           {:mvn/version "0.2.5"}}
                     :ns-default build}
            :neil   {:project {:name        com.outskirtslabs/sops
                               :url         "https://github.com/outskirtslabs/sops"
