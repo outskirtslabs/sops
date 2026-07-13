@@ -7,7 +7,7 @@ ____
 
 image:https://img.shields.io/badge/doc-outskirtslabs-orange.svg[doc,link=https://docs.outskirtslabs.com/ol.sops/next/]
 image:https://img.shields.io/badge/status-maturing-yellow.svg[status: maturing,link=https://docs.outskirtslabs.com/open-source-vital-signs#maturing]
-image:https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fgarnix.io%2Fapi%2Fbadges%2Foutskirtslabs%2Fsops[alt=built with garnix,link=https://garnix.io/repo/outskirtslabs/sops]
+image:https://ci.outskirtslabs.com/repos/github/outskirtslabs/sops/badge.svg[alt=nixbot,link=https://ci.outskirtslabs.com/repos/github/outskirtslabs/sops]
 https://clojars.org/com.outskirtslabs/sops[image:https://img.shields.io/clojars/v/com.outskirtslabs/sops.svg[Clojars
 Project]]
 
